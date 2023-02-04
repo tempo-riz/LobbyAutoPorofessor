@@ -1,5 +1,7 @@
-# LobbyReveal
-#### LobbyReveal is a small app that lets you see who is in your lobby.
+# LobbyAutoPorofessor
+
+#### Fork from LobbyReveal autostarting porofessor on lobby start
+
 ## Example
 ![image](https://cdn.discordapp.com/attachments/882326156613910528/1042791430059475005/image.png)
 ## Where can i download the compiled version?

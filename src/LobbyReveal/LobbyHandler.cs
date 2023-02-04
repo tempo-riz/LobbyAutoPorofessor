@@ -38,7 +38,7 @@ public enum Platform
     BR1,
     JP1
 }
-public delegate void OnUpdate(LobbyHandler handler, string[] names);
+public delegate void OnUpdate(LobbyHandler handler);
 public class LobbyHandler
 {
     private readonly LeagueApi _api;
@@ -114,10 +114,10 @@ public class LobbyHandler
 
             var names = participantsJson.participants.Select(x => x.name).ToArray();
 
-            if (!_cache.SequenceEqual(names))
+            if (!_cache.SequenceEqual(names) && names.Length > 4) //wait for full lobby to be loaded
             {
                 _cache = names;
-                OnUpdate?.Invoke(this,names);
+                OnUpdate?.Invoke(this);
             }
         }
     }
