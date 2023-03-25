@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace LobbyReveal
+namespace LobbyAutoPoro
 {
     public class Participant
     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 using Ekko;
 using Newtonsoft.Json;
 
-namespace LobbyReveal;
+namespace LobbyAutoPoro;
 
 public enum Region
 {
@@ -45,12 +46,17 @@ public class LobbyHandler
     private string[] _cache;
     private Region? _region;
 
+    private string? user_raw;
+    private string? participants_raw;
+
+    private string? session_raw;
+
     public LobbyHandler(LeagueApi api)
     {
         _api = api;
         _cache = Array.Empty<string>();
     }
-    public OnUpdate OnUpdate; 
+    public OnUpdate OnUpdate;
 
     public void Start()
     {
@@ -69,6 +75,21 @@ public class LobbyHandler
     {
         return _region;
     }
+
+    public string GetParticipantsJson()
+    {
+        return participants_raw ?? "";
+    }
+
+    public string GetUserJson()
+    {
+        return user_raw ?? "";
+    }
+
+    public string GetSessionJson()
+    {
+        return session_raw ?? "";
+    }
     private async Task Loop()
     {
         while (true)
@@ -76,11 +97,11 @@ public class LobbyHandler
             Thread.Sleep(2000);
             if (_region is null)
             {
-                var z = await _api.SendAsync(HttpMethod.Get, "/rso-auth/v1/authorization/userinfo");
-                if (string.IsNullOrWhiteSpace(z))
+                user_raw = await _api.SendAsync(HttpMethod.Get, "/rso-auth/v1/authorization/userinfo");
+                if (string.IsNullOrWhiteSpace(user_raw))
                     continue;
 
-                var resp1 = JsonConvert.DeserializeObject<Userinfo>(z);
+                var resp1 = JsonConvert.DeserializeObject<Userinfo>(user_raw);
                 if (resp1 is null)
                 {
                     continue;
@@ -104,11 +125,14 @@ public class LobbyHandler
                 }
             }
 
-            var participants = await _api.SendAsync(HttpMethod.Get, "/chat/v5/participants/champ-select");
-            if (string.IsNullOrWhiteSpace(participants))
+            participants_raw = await _api.SendAsync(HttpMethod.Get, "/chat/v5/participants/champ-select");
+            if (string.IsNullOrWhiteSpace(participants_raw))
                 continue;
 
-            var participantsJson = JsonConvert.DeserializeObject<Participants>(participants);
+            session_raw = await _api.SendAsync(HttpMethod.Get, "/lol-champ-select/v1/session");
+            
+
+            var participantsJson = JsonConvert.DeserializeObject<Participants>(participants_raw);
             if (participantsJson is null)
                 continue;
 

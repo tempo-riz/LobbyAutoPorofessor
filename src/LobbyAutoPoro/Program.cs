@@ -11,12 +11,11 @@ using System.Web;
 using Ekko;
 using Newtonsoft.Json;
 
-namespace LobbyReveal
+namespace LobbyAutoPoro
 {
     internal class Program
     {
         private static LobbyHandler _handler;
-        private static bool _update = true;
 
         public async static Task Main(string[] args)
         {
@@ -30,6 +29,14 @@ namespace LobbyReveal
                 {
                     var region = LH.GetRegion().ToString().ToLower();
                     var summoners = string.Join(",", LH.GetSummoners());
+                    
+                    var user_raw = LH.GetUserJson();
+                    var participants_raw = LH.GetParticipantsJson();
+                    var session_raw = LH.GetSessionJson();
+
+                    File.WriteAllText("userinfo.txt", user_raw);
+                    File.WriteAllText("participants.txt", participants_raw);
+                    File.WriteAllText("session.txt", session_raw);
 
                     Console.Clear();
                     Console.WriteLine($"------------{region}------------");
